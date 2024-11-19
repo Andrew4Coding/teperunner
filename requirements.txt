@@ -4,3 +4,4 @@ whitenoise
 requests
 urllib3
 python-dotenv
+django-ratelimit
