@@ -19,6 +19,7 @@ async def run_jar(input_text: str, is_debug: bool) -> str:
     return stdout.decode()
 
 @ratelimit(key='ip', rate='20/m', method='POST', block=True)
+@ratelimit(key='ip', rate='100/m', method='GET', block=True)
 @csrf_exempt
 def execute_jar(request: HttpRequest):
     if request.method == "GET":
