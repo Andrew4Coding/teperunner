@@ -5,10 +5,10 @@ from django.http import HttpRequest
 from django.views.decorators.csrf import csrf_exempt
 
 # This function executes the JAR file asynchronously
-async def run_jar(input_text: str) -> str:
+async def run_jar(input_text: str, is_debug: bool) -> str:
     # Create the subprocess and pass the input through stdin
     process = await asyncio.create_subprocess_exec(
-        "java", "-jar", "TP2.jar",
+        "java", "-jar", "TP2.jar", f"{str(is_debug).lower()}",
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
@@ -33,13 +33,14 @@ async def execute_jar(request: HttpRequest):
         try:
             # Get the text input from the form
             input_text = request.POST.get("text", "")
+            isDebug = request.GET.get('debug') == 'true'
             if not input_text:
                 return render(request, "main.html", {"error": "No input text provided"})
 
             print(input_text)
 
             # Call the async function to run the JAR file
-            result = await run_jar(input_text)
+            result = await run_jar(input_text, isDebug)
 
             # Render the result in the template
             return render(request, "main.html", {"input_text": input_text, "output": result})

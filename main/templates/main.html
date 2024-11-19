@@ -12,11 +12,33 @@
                 <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Run</button>
             </div>
         </form>
+        <!-- Debugger Toggle -->
+        <div class="my-4 flex gap-4">
+            <!-- Copy Button -->
+            <button 
+                onclick="copyToClipboard()" 
+                class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                Copy Output
+            </button>
+            <!-- Download Button -->
+            <a 
+                id="download-btn" 
+                class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                Download Output
+            </a>
+        </div>
+        <div class="bg-gray-100 p-4 rounded shadow-md">
+            <label class="inline-flex items-center">
+                <input type="checkbox" id="debugger-toggle" class="form-checkbox text-blue-600">
+                <span class="ml-2 text-gray-700 font-bold">Enable Debugger</span>
+            </label>
+        </div>
         <hr class="my-4">
         {% if output %}
             <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
                 <h2 class="text-xl font-bold mb-2">Output:</h2>
-                <pre class="whitespace-pre-wrap">{{ output }}</pre>
+                <pre id="output-text" class="whitespace-pre-wrap">{{ output }}</pre>
+
             </div>
         {% endif %}
         {% if error %}
@@ -29,5 +51,68 @@
                 {% endif %}
             </div>
         {% endif %}
+        <hr class="my-4">
     </div>
+
+    <script>
+        let isDebuggerEnabled = false; // Debugger state
+
+        // Function to toggle debugger
+        document.getElementById('debugger-toggle').addEventListener('change', function () {
+            isDebuggerEnabled = this.checked;
+            console.log(`Debugger is now ${isDebuggerEnabled ? 'enabled' : 'disabled'}`);
+        });
+
+        // Function to log debug messages (only if debugger is enabled)
+        function logDebug(message) {
+            if (isDebuggerEnabled) {
+                console.log(`[DEBUG] ${message}`);
+            }
+        }
+
+        // Function to copy the output text to clipboard
+        function copyToClipboard() {
+            const outputText = document.getElementById('output-text').innerText;
+            navigator.clipboard.writeText(outputText).then(() => {
+                alert('Output copied to clipboard!');
+                logDebug('Output copied to clipboard successfully.');
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+                logDebug(`Copy to clipboard failed: ${err.message}`);
+            });
+        }
+
+        // Function to dynamically set the download button
+        document.addEventListener("DOMContentLoaded", function() {
+            const outputText = document.getElementById('output-text')?.innerText || '';
+            const downloadBtn = document.getElementById('download-btn');
+            if (downloadBtn && outputText) {
+                const blob = new Blob([outputText], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                downloadBtn.href = url;
+                downloadBtn.download = 'output.txt';
+                logDebug('Download button set with Blob URL.');
+            } else {
+                logDebug('No output text available for download.');
+            }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const debugToggle = document.getElementById('debugger-toggle');
+
+            // Set the initial state of the checkbox based on the query parameter
+            debugToggle.checked = urlParams.get('debug') === 'true';
+
+            // Update the query parameter when the checkbox is toggled
+            debugToggle.addEventListener('change', function () {
+                const newUrlParams = new URLSearchParams(window.location.search);
+                if (this.checked) {
+                    newUrlParams.set('debug', 'true');
+                } else {
+                    newUrlParams.delete('debug');
+                }
+                const newUrl = `${window.location.pathname}?${newUrlParams.toString()}`;
+                window.history.replaceState({}, '', newUrl);
+            });
+        });
+    </script>
 {% endblock content %}
