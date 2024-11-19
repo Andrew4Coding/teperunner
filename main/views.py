@@ -34,6 +34,9 @@ def execute_jar(request: HttpRequest):
 
             # Run the async function synchronously
             result = asyncio.run(run_jar(input_text, isDebug))
+            
+            if result.startswith("Error:"):
+                return render(request, "main.html", {"error": result})
 
             return render(request, "main.html", {"input_text": input_text, "output": result})
 
