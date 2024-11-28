@@ -1,118 +1,104 @@
 {% extends "base.html" %}
 {% block content %}
-    <div class="container mx-auto p-4">
-        <h1 class="text-2xl font-bold mb-4">Run TP 2</h1>
-        <form method="POST" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-            {% csrf_token %}
-            <div class="mb-4">
-                <label for="text" class="block text-gray-700 text-sm font-bold mb-2">Input Text:</label>
-                <textarea id="text" name="text" rows="10" cols="50" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">{{ input_text|default:"" }}</textarea>
-            </div>
-            <div class="flex items-center justify-between">
-                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Run</button>
-            </div>
-        </form>
-        <!-- Debugger Toggle -->
-        <div class="my-4 flex gap-4">
-            <!-- Copy Button -->
-            <button 
-                onclick="copyToClipboard()" 
-                class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                Copy Output
+<div class="container mx-auto max-w-4xl p-6">
+    <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 flex flex-col sm:flex-row gap-4 items-center">
+        <i class="fas fa-terminal text-blue-600"></i>
+        <span>Run TP 3</span>
+    </h1>
+    <p class="text-center sm:text-left">
+        Made with 💖 by Andrew
+    </p>
+
+    <!-- Form Section -->
+    <form method="POST" class="bg-white shadow-lg rounded-lg px-4 sm:px-6 py-6 sm:py-8 mb-6">
+        {% csrf_token %}
+        <div class="mb-5">
+            <label for="text" class="block text-lg font-medium text-gray-700 mb-2 font-semibold">
+                Input Text:
+            </label>
+            <textarea placeholder="Enter your queries" id="text" name="text" rows="10" 
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">{{ input_text|default:"" }}</textarea>
+        </div>
+        
+        <!-- Hidden Debugger Field -->
+        <input type="hidden" id="isDebug" name="isDebug" value="false">
+        
+        <div class="flex justify-end">
+            <button type="submit" 
+                class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition w-full sm:w-auto">
+                <i class="fas fa-play"></i> Run
             </button>
-            <!-- Download Button -->
-            <a 
-                id="download-btn" 
-                class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                Download Output
+        </div>
+    </form>
+
+    <!-- Actions Section -->
+    <div class="bg-gray-50 shadow-lg rounded-lg p-4 sm:p-6 mb-6 flex flex-col sm:flex-row items-center gap-4">
+        <div class="w-full flex gap-2">
+            <button onclick="copyToClipboard()" 
+                class="bg-gray-600 hover:bg-gray-700 text-white font-medium text-sm py-2 px-4 rounded-lg shadow-md transition flex gap-2 items-center w-full sm:w-auto">
+                <i class="fas fa-copy"></i> Copy Output
+            </button>
+            <a id="download-btn" 
+                class="bg-green-600 hover:bg-green-700 text-white font-medium text-sm py-2 px-4 rounded-lg shadow-md transition flex gap-2 items-center w-full sm:w-auto">
+                <i class="fas fa-download"></i> Download Output
             </a>
         </div>
-        <div class="bg-gray-100 p-4 rounded shadow-md">
-            <label class="inline-flex items-center">
-                <input type="checkbox" id="debugger-toggle" class="form-checkbox text-blue-600">
-                <span class="ml-2 text-gray-700 font-bold">Enable Debugger</span>
-            </label>
-        </div>
-        <hr class="my-4">
-        {% if output %}
-            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
-                <h2 class="text-xl font-bold mb-2">Output:</h2>
-                <pre id="output-text" class="whitespace-pre-wrap">{{ output }}</pre>
-
-            </div>
-        {% endif %}
-        {% if error %}
-            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4" role="alert">
-                <h2 class="text-xl font-bold mb-2">Error:</h2>
-                <pre class="whitespace-pre-wrap">{{ error }}</pre>
-                {% if details %}
-                    <h3 class="text-lg font-bold mt-2">Details:</h3>
-                    <pre class="whitespace-pre-wrap">{{ details }}</pre>
-                {% endif %}
-            </div>
-        {% endif %}
-        <hr class="my-4">
+        <label class="flex items-center gap-2 w-full sm:w-auto">
+            <input type="checkbox" id="debugger-toggle" class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+            <span class="text-gray-700 font-semibold">Enable Debugger</span>
+        </label>
     </div>
 
-    <script>
-        let isDebuggerEnabled = false; // Debugger state
+    <!-- Output Section -->
+    {% if output %}
+    <div class="bg-green-50 border border-green-400 rounded-lg p-4 sm:p-6 mb-6">
+        <h2 class="text-lg font-bold text-green-700 mb-2"><i class="fas fa-check-circle"></i> Output:</h2>
+        <pre id="output-text" class="text-gray-800 whitespace-pre-wrap overflow-x-scroll md:overflow-x-hidden">{{ output }}</pre>
+    </div>
+    {% endif %}
 
-        // Function to toggle debugger
-        document.getElementById('debugger-toggle').addEventListener('change', function () {
-            isDebuggerEnabled = this.checked;
-            console.log(`Debugger is now ${isDebuggerEnabled ? 'enabled' : 'disabled'}`);
-        });
+    <!-- Error Section -->
+    {% if error %}
+    <div class="bg-red-50 border border-red-400 rounded-lg p-4 sm:p-6 mb-6">
+        <h2 class="text-lg font-bold text-red-700 mb-2"><i class="fas fa-exclamation-circle"></i> Error:</h2>
+        <pre class="text-red-700 whitespace-pre-wrap">{{ error }}</pre>
+        {% if details %}
+        <h3 class="text-md font-semibold text-red-700 mt-4"><i class="fas fa-info-circle"></i> Details:</h3>
+        <pre class="text-red-600 whitespace-pre-wrap">{{ details }}</pre>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
 
-        // Function to log debug messages (only if debugger is enabled)
-        function logDebug(message) {
-            if (isDebuggerEnabled) {
-                console.log(`[DEBUG] ${message}`);
-            }
+<script>
+    // Update the hidden field with debugger toggle value
+    document.getElementById('debugger-toggle').addEventListener('change', function () {
+        const isDebugField = document.getElementById('isDebug');
+        isDebugField.value = this.checked ? 'true' : 'false';
+        console.log(`Debugger is now ${isDebugField.value}`);
+
+        // Set query parameter for debugging
+        const url = new URL(window.location.href);
+        url.searchParams.set('debug', isDebugField.value);
+        window.history.replaceState({}, '', url);
+    });
+
+    function copyToClipboard() {
+        const outputText = document.getElementById('output-text')?.innerText || '';
+        navigator.clipboard.writeText(outputText)
+            .then(() => alert('Output copied to clipboard!'))
+            .catch(err => console.error('Copy failed: ', err));
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const outputText = document.getElementById('output-text')?.innerText || '';
+        const downloadBtn = document.getElementById('download-btn');
+        if (downloadBtn && outputText) {
+            const blob = new Blob([outputText], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            downloadBtn.href = url;
+            downloadBtn.download = 'output.txt';
         }
-
-        // Function to copy the output text to clipboard
-        function copyToClipboard() {
-            const outputText = document.getElementById('output-text').innerText;
-            navigator.clipboard.writeText(outputText).then(() => {
-                alert('Output copied to clipboard!');
-                logDebug('Output copied to clipboard successfully.');
-            }).catch(err => {
-                console.error('Failed to copy text: ', err);
-                logDebug(`Copy to clipboard failed: ${err.message}`);
-            });
-        }
-
-        // Function to dynamically set the download button
-        document.addEventListener("DOMContentLoaded", function() {
-            const outputText = document.getElementById('output-text')?.innerText || '';
-            const downloadBtn = document.getElementById('download-btn');
-            if (downloadBtn && outputText) {
-                const blob = new Blob([outputText], { type: 'text/plain' });
-                const url = URL.createObjectURL(blob);
-                downloadBtn.href = url;
-                downloadBtn.download = 'output.txt';
-                logDebug('Download button set with Blob URL.');
-            } else {
-                logDebug('No output text available for download.');
-            }
-
-            const urlParams = new URLSearchParams(window.location.search);
-            const debugToggle = document.getElementById('debugger-toggle');
-
-            // Set the initial state of the checkbox based on the query parameter
-            debugToggle.checked = urlParams.get('debug') === 'true';
-
-            // Update the query parameter when the checkbox is toggled
-            debugToggle.addEventListener('change', function () {
-                const newUrlParams = new URLSearchParams(window.location.search);
-                if (this.checked) {
-                    newUrlParams.set('debug', 'true');
-                } else {
-                    newUrlParams.delete('debug');
-                }
-                const newUrl = `${window.location.pathname}?${newUrlParams.toString()}`;
-                window.history.replaceState({}, '', newUrl);
-            });
-        });
-    </script>
+    });
+</script>
 {% endblock content %}

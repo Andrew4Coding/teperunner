@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpRequest
+from django.http import HttpRequest, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django_ratelimit.decorators import ratelimit
 import subprocess
@@ -44,3 +44,10 @@ def execute_jar(request: HttpRequest):
             return render(request, "main.html", {"error": "An error occurred", "details": str(e)})
 
     return render(request, "main.html", {"error": "Invalid HTTP method. Use GET or POST."})
+
+def sso_gateway(request: HttpRequest):
+    # Get Queries
+    query = request.GET
+    
+    return JsonResponse({"token": query.get("token", "null")})
+    
