@@ -5,6 +5,7 @@ from django_ratelimit.decorators import ratelimit
 import subprocess
 import asyncio
 import time
+import re
 
 # This function executes the JAR file asynchronously
 async def run_jar(input_text: str, is_debug: bool) -> str:
@@ -19,6 +20,19 @@ async def run_jar(input_text: str, is_debug: bool) -> str:
         return f"Error: {stderr.decode()}"
     return stdout.decode()
 
+def sanitize_text(text):
+    """
+    Removes unwanted or harmful characters from the text.
+    """
+
+    # Remove potentially malicious content (e.g., scripts)
+    sanitized_text = re.sub(r'<script.*?>.*?</script>', '', text, flags=re.IGNORECASE)
+
+    # Ensure no HTML tags remain
+    sanitized_text = re.sub(r'<.*?>', '', sanitized_text)
+
+    return sanitized_text
+
 @ratelimit(key='ip', rate='20/m', method='POST', block=True)
 @ratelimit(key='ip', rate='100/m', method='GET', block=True)
 @csrf_exempt
@@ -29,6 +43,7 @@ def execute_jar(request: HttpRequest):
     if request.method == "POST":
         try:
             input_text = request.POST.get("text", "")
+            input_text = sanitize_text(input_text)
             isDebug = request.GET.get('debug') == 'true'
             if not input_text:
                 return render(request, "main.html", {"error": "No input text provided"})
