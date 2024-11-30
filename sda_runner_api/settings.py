@@ -27,6 +27,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['teperunner.andrew-devito.website', 'localhost', '127.0.0.1']
 
+CSRF_TRUSTED_ORIGINS = ['teperunner.andrew-devito.website', 'localhost', '127.0.0.1']
+
 
 # Application definition
 
