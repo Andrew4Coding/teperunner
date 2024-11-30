@@ -7,6 +7,8 @@ import asyncio
 import time
 import re
 
+from main.models import Log
+
 # This function executes the JAR file asynchronously
 async def run_jar(input_text: str, is_debug: bool) -> str:
     process = await asyncio.create_subprocess_exec(
@@ -33,6 +35,17 @@ def sanitize_text(text):
 
     return sanitized_text
 
+def get_client_ip(request):
+    """
+    Retrieves the client's public IP address.
+    """
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
 @ratelimit(key='ip', rate='20/m', method='POST', block=True)
 @ratelimit(key='ip', rate='100/m', method='GET', block=True)
 @csrf_exempt
@@ -42,8 +55,16 @@ def execute_jar(request: HttpRequest):
 
     if request.method == "POST":
         try:
+            # Create new Log
             input_text = request.POST.get("text", "")
             input_text = sanitize_text(input_text)
+            
+            Log.objects.create(
+                ip = get_client_ip(request),
+                user_agent=request.META.get("HTTP_USER_AGENT"),
+                query=input_text[:200],
+            )
+            
             isDebug = request.GET.get('debug') == 'true'
             if not input_text:
                 return render(request, "main.html", {"error": "No input text provided"})
