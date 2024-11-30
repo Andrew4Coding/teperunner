@@ -8,7 +8,7 @@ import asyncio
 # This function executes the JAR file asynchronously
 async def run_jar(input_text: str, is_debug: bool) -> str:
     process = await asyncio.create_subprocess_exec(
-        "java", "-jar", "TP2.jar", f"{str(is_debug).lower()}",
+        "java", "-jar", "TP3.jar", f"{str(is_debug).lower()}",
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
