@@ -4,6 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django_ratelimit.decorators import ratelimit
 import subprocess
 import asyncio
+import time
 
 # This function executes the JAR file asynchronously
 async def run_jar(input_text: str, is_debug: bool) -> str:
@@ -32,22 +33,19 @@ def execute_jar(request: HttpRequest):
             if not input_text:
                 return render(request, "main.html", {"error": "No input text provided"})
 
+            # Measure the execution time
+            start_time = time.time()
             # Run the async function synchronously
             result = asyncio.run(run_jar(input_text, isDebug))
+            end_time = time.time()
+            execution_time = round(end_time - start_time, 3)
             
             if result.startswith("Error:"):
                 return render(request, "main.html", {"error": result})
 
-            return render(request, "main.html", {"input_text": input_text, "output": result})
+            return render(request, "main.html", {"input_text": input_text, "output": result, "time": execution_time})
 
         except Exception as e:
             return render(request, "main.html", {"error": "An error occurred", "details": str(e)})
 
     return render(request, "main.html", {"error": "Invalid HTTP method. Use GET or POST."})
-
-def sso_gateway(request: HttpRequest):
-    # Get Queries
-    query = request.GET
-    
-    return JsonResponse({"token": query.get("token", "null")})
-    
