@@ -66,6 +66,10 @@ def execute_jar(request: HttpRequest):
             )
             
             isDebug = request.GET.get('debug') == 'true'
+            
+            if len(input_text) > 10000 and isDebug:
+                return render(request, "main.html", {"error": "Bro mau buat website gw down bjir"})
+            
             if not input_text:
                 return render(request, "main.html", {"error": "No input text provided"})
 
