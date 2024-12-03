@@ -1,219 +1,156 @@
-{% extends "base.html" %} {% block content %}
-<div class="container mx-auto max-w-4xl p-6">
-	<h1
-		class="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 flex flex-col sm:flex-row gap-4 items-center"
-	>
-		<i class="fas fa-terminal text-blue-600"></i>
-		<span>Run TP 3</span>
-	</h1>
-	<p class="text-center sm:text-left mb-6">Made with 💖 by Andrew</p>
+{% extends "base.html" %} 
+{% block content %}
+<div class="container mx-auto max-w-3xl p-6 space-y-6">
+	<!-- Title Section -->
+	<header class="text-center">
+		<h1 class="text-3xl font-bold text-gray-800 flex items-center justify-center gap-3">
+			<i class="fas fa-terminal text-blue-600"></i>
+			<span>Run TP 3</span>
+		</h1>
+		<p class="text-sm text-gray-500">Made with 💖 by Andrew</p>
+	</header>
 
-	<div class="hidden lg:block bg-blue-50 border border-blue-400 rounded-lg p-4 sm:p-6 mb-6 text-center fixed bottom-4 right-4 max-w-[250px]">
-		<h2 class="text-lg font-bold text-blue-700 mb-2">
+	<!-- Tip Jar -->
+	<div class="hidden lg:block fixed bottom-4 right-4 max-w-[240px] bg-blue-100 border border-blue-300 rounded-lg p-4 shadow-lg">
+		<h2 class="text-blue-800 font-semibold mb-2 flex items-center gap-2">
 			<i class="fas fa-lightbulb"></i> Tip Jar
 		</h2>
-		<p class="text-gray-800 mb-4">If you found this tool helpful, consider leaving a tip! 💖</p>
-		<a href="https://teer.id/andrew_devito_aryo" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm py-2 px-4 rounded-lg shadow-md transition">
-			<i class="fas fa-ice-cream"></i> Buy me a Ice Cream
+		<p class="text-gray-600 text-sm mb-3">Found this tool helpful? Consider leaving a tip! 💖</p>
+		<a href="https://teer.id/andrew_devito_aryo" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white text-sm py-2 px-4 rounded-lg shadow-md transition inline-flex items-center gap-2">
+			<i class="fas fa-ice-cream"></i> Buy me an Ice Cream
 		</a>
 	</div>
 
-	<!-- File Upload Section -->
-	<form
-		id="upload-form"
-		class="mb-6"
-	>
-		<div class="mb-5">
-			<label for="">Upload TXT file contains Testcase here 😄</label>
-			<input
-				type="file"
-				id="file-upload"
-				name="file-upload"
-				accept=".txt"
-				class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-			/>
-		</div>
-	</form>
+	<!-- File Upload -->
+	<section class="bg-white rounded-lg shadow p-6">
+		<h2 class="text-lg font-semibold text-gray-800 mb-4">Upload Testcase</h2>
+		<label for="file-upload" class="block text-sm font-medium text-gray-700 mb-2">Upload TXT file</label>
+		<input type="file" id="file-upload" name="file-upload" accept=".txt" class="w-full border rounded p-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400" />
+	</section>
 
-	<!-- Form Section -->
-	<form
-		method="POST"
-		class="bg-white shadow-lg rounded-lg px-4 sm:px-6 py-6 sm:py-8 mb-6"
-	>
-		{% csrf_token %}
-		<div class="mb-5">
-			<label
-				for="text"
-				class="block text-lg font-medium text-gray-700 mb-2 font-semibold"
-			>
-				Input Text:
-			</label>
-			<textarea
-				placeholder="Enter your queries"
-				id="text"
-				name="text"
-				rows="10"
-				class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-			>
-{{ input_text|default:"" }}</textarea
-			>
-		</div>
-
-		<!-- Hidden Debugger Field -->
-		<input
-			type="hidden"
-			id="isDebug"
-			name="isDebug"
-			value="false"
-		/>
-
-		<div class="flex justify-end">
-			<button
-				type="submit"
-				class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition w-full sm:w-auto"
-			>
+	<!-- Input Form -->
+	<section class="bg-white rounded-lg shadow p-6">
+		<form method="POST" class="space-y-4">
+			{% csrf_token %}
+			<label for="text" class="block text-sm font-medium text-gray-700">Input Text</label>
+			<textarea id="text" name="text" rows="8" placeholder="Enter your queries here..." class="w-full border rounded p-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400">{{ input_text|default:"" }}</textarea>
+			<input type="hidden" id="isDebug" name="isDebug" value="false" />
+			<button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white text-sm py-2 px-4 rounded-lg shadow-md transition w-full sm:w-auto">
 				<i class="fas fa-play"></i> Run
 			</button>
-		</div>
-	</form>
+		</form>
+	</section>
 
 	<!-- Actions Section -->
-	<div
-		class="bg-gray-50 shadow-lg rounded-lg p-4 sm:p-6 mb-6 flex flex-col sm:flex-row items-center gap-4"
-	>
-		<div class="w-full flex gap-2">
-			<button
-				onclick="copyToClipboard()"
-				class="bg-gray-600 hover:bg-gray-700 text-white font-medium text-sm py-2 px-4 rounded-lg shadow-md transition flex gap-2 items-center w-full sm:w-auto"
-			>
+	<section class="bg-gray-50 rounded-lg shadow p-6 flex flex-col sm:flex-row gap-4 items-center justify-between">
+		<div class="flex gap-2">
+			<button onclick="copyToClipboard()" class="bg-gray-600 hover:bg-gray-700 text-white text-sm py-2 px-4 rounded-lg shadow-md transition flex items-center gap-2">
 				<i class="fas fa-copy"></i> Copy Output
 			</button>
-			<a
-				id="download-btn"
-				class="bg-green-600 hover:bg-green-700 text-white font-medium text-sm py-2 px-4 rounded-lg shadow-md transition flex gap-2 items-center w-full sm:w-auto"
-			>
+			<a id="download-btn" class="bg-green-600 hover:bg-green-700 text-white text-sm py-2 px-4 rounded-lg shadow-md transition flex items-center gap-2">
 				<i class="fas fa-download"></i> Download Output
 			</a>
 		</div>
-		<label class="flex items-center gap-2 w-full sm:w-auto">
-			<input
-				type="checkbox"
-				id="debugger-toggle"
-				class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-			/>
-			<span class="text-gray-700 font-semibold">Enable Debugger</span>
+		<label class="flex items-center gap-2">
+			<input type="checkbox" id="debugger-toggle" class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500" />
+			<span class="text-gray-700 text-sm">Enable Debugger</span>
 		</label>
-	</div>
+	</section>
 
-	<!-- Execution Duration Section -->
+	<!-- Execution Section -->
 	{% if time %}
-	<div class="bg-yellow-50 border border-yellow-400 rounded-lg p-4 sm:p-6 mb-6">
-		<h2 class="text-lg font-bold text-yellow-700 mb-2">
-			<i class="fas fa-clock"></i> Execution Duration:
+	<section class="bg-yellow-50 border border-yellow-300 rounded-lg p-4 shadow">
+		<h2 class="text-yellow-700 font-semibold flex items-center gap-2">
+			<i class="fas fa-clock"></i> Execution Duration
 		</h2>
 		<p class="text-gray-800">{{ time }} seconds</p>
-	</div>
+	</section>
 	{% endif %}
 
 	<!-- Output Section -->
 	{% if output %}
-	<div class="bg-green-50 border border-green-400 rounded-lg p-4 sm:p-6 mb-6">
-		<h2 class="text-lg font-bold text-green-700 mb-2">
-			<i class="fas fa-check-circle"></i> Output:
+	<section class="bg-green-50 border border-green-300 rounded-lg p-4 shadow">
+		<h2 class="text-green-700 font-semibold flex items-center gap-2">
+			<i class="fas fa-check-circle"></i> Output
 		</h2>
-		<pre
-			id="output-text"
-			class="text-gray-800 whitespace-pre-wrap overflow-x-scroll md:overflow-x-hidden"
-		>
-{{ output }}</pre
-		>
-	</div>
+		<pre id="output-text" class="text-gray-800 whitespace-pre-wrap overflow-x-auto">{{ output }}</pre>
+	</section>
 	{% endif %}
 
 	<!-- Error Section -->
 	{% if error %}
-	<div class="bg-red-50 border border-red-400 rounded-lg p-4 sm:p-6 mb-6">
-		<h2 class="text-lg font-bold text-red-700 mb-2">
-			<i class="fas fa-exclamation-circle"></i> Error:
+	<section class="bg-red-50 border border-red-300 rounded-lg p-4 shadow">
+		<h2 class="text-red-700 font-semibold flex items-center gap-2">
+			<i class="fas fa-exclamation-circle"></i> Error
 		</h2>
 		<pre class="text-red-700 whitespace-pre-wrap">{{ error }}</pre>
 		{% if details %}
-		<h3 class="text-md font-semibold text-red-700 mt-4">
-			<i class="fas fa-info-circle"></i> Details:
+		<h3 class="text-red-700 font-medium mt-4 flex items-center gap-2">
+			<i class="fas fa-info-circle"></i> Details
 		</h3>
 		<pre class="text-red-600 whitespace-pre-wrap">{{ details }}</pre>
 		{% endif %}
-	</div>
+	</section>
 	{% endif %}
 </div>
 
 <script>
-	document
-		.getElementById("file-upload")
-		.addEventListener("change", function (event) {
-			const file = event.target.files[0];
-			if (file && file.type === "text/plain") {
-				const reader = new FileReader();
-				reader.onload = function (e) {
-					const rawText = e.target.result;
+// File upload logic
+document.getElementById("file-upload").addEventListener("change", function (event) {
+	const file = event.target.files[0];
+	if (file && file.type === "text/plain") {
+		const reader = new FileReader();
+		reader.onload = function (e) {
+			const rawText = e.target.result.replace(/<script.*?>.*?<\/script>/gi, "").replace(/<.*?>/g, "");
+			document.getElementById("text").value = rawText;
+		};
+		reader.readAsText(file);
+	} else {
+		alert("Please upload a valid .txt file.");
+	}
+});
 
-					// Sanitize the content (basic sanitization in JavaScript)
-					const sanitizedText = rawText
-						.replace(/<script.*?>.*?<\/script>/gi, "") // Remove <script> tags
-						.replace(/<.*?>/g, ""); // Remove all HTML tags
+// Debugger logic
+document.getElementById("debugger-toggle").addEventListener("change", function () {
+	const isDebugField = document.getElementById("isDebug");
+	const url = new URL(window.location.href);
 
-					document.getElementById("text").value = sanitizedText;
-				};
-				reader.readAsText(file);
-			} else {
-				alert("Please upload a valid .txt file.");
-			}
-		});
-
-	// Update the hidden field with debugger toggle value
-	document
-		.getElementById("debugger-toggle")
-		.addEventListener("change", function () {
-			const isDebugField = document.getElementById("isDebug");
-			const url = new URL(window.location.href);
-
-			if (this.checked) {
-				isDebugField.value = "true";
-				url.searchParams.set("debug", "true");
-			} else {
-				isDebugField.value = "false";
-				url.searchParams.delete("debug");
-			}
-
-			console.log(`Debugger is now ${isDebugField.value}`);
-			window.history.replaceState({}, "", url);
-		});
-
-	function copyToClipboard() {
-		const outputText = document.getElementById("output-text")?.innerText || "";
-		navigator.clipboard
-			.writeText(outputText)
-			.then(() => alert("Output copied to clipboard!"))
-			.catch((err) => console.error("Copy failed: ", err));
+	if (this.checked) {
+		isDebugField.value = "true";
+		url.searchParams.set("debug", "true");
+	} else {
+		isDebugField.value = "false";
+		url.searchParams.delete("debug");
 	}
 
-	document.addEventListener("DOMContentLoaded", function () {
-		const outputText = document.getElementById("output-text")?.innerText || "";
-		const downloadBtn = document.getElementById("download-btn");
-		if (downloadBtn && outputText) {
-			const blob = new Blob([outputText], { type: "text/plain" });
-			const url = URL.createObjectURL(blob);
-			downloadBtn.href = url;
-			downloadBtn.download = "output.txt";
-		}
+	console.log(`Debugger is now ${isDebugField.value}`);
+	window.history.replaceState({}, "", url);
+});
 
-		// Check URL parameter and set debugger toggle
-		const urlParams = new URLSearchParams(window.location.search);
-		const debug = urlParams.get("debug");
-		if (debug === "true") {
-			document.getElementById("debugger-toggle").checked = true;
-			document.getElementById("isDebug").value = "true";
-		}
-	});
+// Copy to clipboard
+function copyToClipboard() {
+	const outputText = document.getElementById("output-text")?.innerText || "";
+	navigator.clipboard.writeText(outputText)
+		.then(() => alert("Output copied to clipboard!"))
+		.catch((err) => console.error("Copy failed: ", err));
+}
+
+// Download output
+document.addEventListener("DOMContentLoaded", function () {
+	const outputText = document.getElementById("output-text")?.innerText || "";
+	const downloadBtn = document.getElementById("download-btn");
+	if (downloadBtn && outputText) {
+		const blob = new Blob([outputText], { type: "text/plain" });
+		const url = URL.createObjectURL(blob);
+		downloadBtn.href = url;
+		downloadBtn.download = "output.txt";
+	}
+
+	const debug = new URLSearchParams(window.location.search).get("debug");
+	if (debug === "true") {
+		document.getElementById("debugger-toggle").checked = true;
+		document.getElementById("isDebug").value = "true";
+	}
+});
 </script>
 {% endblock content %}
