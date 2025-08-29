@@ -1,16 +1,10 @@
 import { Loader } from "lucide-react";
-import { Outlet, redirect, useNavigation, type LoaderFunctionArgs } from "react-router";
+import { Outlet, useNavigation } from "react-router";
 import { ThemeProvider } from "~/components/context/theme-provider";
 import { Toaster } from "~/components/ui/sonner";
 import { ThemeToggler } from "~/components/ui/ThemeToggler";
-import { getUserFromRequest } from "~/lib/auth.server";
 
-export async function loader({ request }: LoaderFunctionArgs) {
-  const user = await getUserFromRequest(request);
-  if (!user.user && !request.url.includes('/login')) {
-    return redirect('/login');
-  }
-
+export async function loader() {
   return null;
 }
 
